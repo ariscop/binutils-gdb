@@ -1764,7 +1764,9 @@ static struct inferior *
 remote_add_inferior (int fake_pid_p, int pid, int attached,
 		     int try_open_exec)
 {
+  static int have_i_run = 0;
   struct inferior *inf;
+  struct remote_state *rs = get_remote_state();
 
   /* Check whether this process we're learning about is to be
      considered attached, or if is to be considered to have been
@@ -1784,6 +1786,11 @@ remote_add_inferior (int fake_pid_p, int pid, int attached,
       inf->aspace = maybe_new_address_space ();
       inf->pspace = current_program_space;
     }
+  else if (remote_multi_process_p(rs) && have_i_run)
+    {
+      inf = add_inferior_with_spaces ();
+      inferior_appeared (inf, pid);
+    }
   else
     {
       /* In the traditional debugging scenario, there's a 1-1 match
@@ -1791,6 +1798,8 @@ remote_add_inferior (int fake_pid_p, int pid, int attached,
 	 to the program space's address space.  */
       inf = current_inferior ();
       inferior_appeared (inf, pid);
+
+      have_i_run = 1;
     }
 
   inf->attach_flag = attached;
