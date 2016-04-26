@@ -4073,6 +4073,13 @@ debug_done_generating_core (struct target_ops *self)
   fputs_unfiltered (")\n", gdb_stdlog);
 }
 
+static int
+delegate_has_all_memory (struct target_ops *self)
+{
+  self = self->beneath;
+  return self->to_has_all_memory (self);
+}
+
 static void
 install_delegators (struct target_ops *ops)
 {
@@ -4378,6 +4385,8 @@ install_delegators (struct target_ops *ops)
     ops->to_prepare_to_generate_core = delegate_prepare_to_generate_core;
   if (ops->to_done_generating_core == NULL)
     ops->to_done_generating_core = delegate_done_generating_core;
+  if (ops->to_has_all_memory == NULL)
+    ops->to_has_all_memory = delegate_has_all_memory;
 }
 
 static void
