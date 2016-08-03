@@ -318,23 +318,6 @@ target_has_execution_current (void)
 void
 complete_target_initialization (struct target_ops *t)
 {
-  /* Provide default values for all "must have" methods.  */
-
-  if (t->to_has_all_memory == NULL)
-    t->to_has_all_memory = return_zero;
-
-  if (t->to_has_memory == NULL)
-    t->to_has_memory = return_zero;
-
-  if (t->to_has_stack == NULL)
-    t->to_has_stack = return_zero;
-
-  if (t->to_has_registers == NULL)
-    t->to_has_registers = return_zero;
-
-  if (t->to_has_execution == NULL)
-    t->to_has_execution = return_zero_has_execution;
-
   /* These methods can be called on an unpushed target and so require
      a default implementation if the target might plausibly be the
      default run target.  */

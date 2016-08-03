@@ -657,11 +657,16 @@ struct target_ops
     struct target_section_table *(*to_get_section_table) (struct target_ops *)
       TARGET_DEFAULT_RETURN (NULL);
     enum strata to_stratum;
-    int (*to_has_all_memory) (struct target_ops *);
-    int (*to_has_memory) (struct target_ops *);
-    int (*to_has_stack) (struct target_ops *);
-    int (*to_has_registers) (struct target_ops *);
-    int (*to_has_execution) (struct target_ops *, ptid_t);
+    int (*to_has_all_memory) (struct target_ops *)
+      TARGET_DEFAULT_RETURN (0);
+    int (*to_has_memory) (struct target_ops *)
+      TARGET_DEFAULT_RETURN (0);
+    int (*to_has_stack) (struct target_ops *)
+      TARGET_DEFAULT_RETURN (0);
+    int (*to_has_registers) (struct target_ops *)
+      TARGET_DEFAULT_RETURN (0);
+    int (*to_has_execution) (struct target_ops *, ptid_t)
+      TARGET_DEFAULT_RETURN (0);
     int to_has_thread_control;	/* control thread execution */
     int to_attach_no_wait;
     /* This method must be implemented in some situations.  See the

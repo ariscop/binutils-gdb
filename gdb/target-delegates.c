@@ -1726,6 +1726,143 @@ debug_get_section_table (struct target_ops *self)
 }
 
 static int
+delegate_has_all_memory (struct target_ops *self)
+{
+  self = self->beneath;
+  return self->to_has_all_memory (self);
+}
+
+static int
+tdefault_has_all_memory (struct target_ops *self)
+{
+  return 0;
+}
+
+static int
+debug_has_all_memory (struct target_ops *self)
+{
+  int result;
+  fprintf_unfiltered (gdb_stdlog, "-> %s->to_has_all_memory (...)\n", debug_target.to_shortname);
+  result = debug_target.to_has_all_memory (&debug_target);
+  fprintf_unfiltered (gdb_stdlog, "<- %s->to_has_all_memory (", debug_target.to_shortname);
+  target_debug_print_struct_target_ops_p (&debug_target);
+  fputs_unfiltered (") = ", gdb_stdlog);
+  target_debug_print_int (result);
+  fputs_unfiltered ("\n", gdb_stdlog);
+  return result;
+}
+
+static int
+delegate_has_memory (struct target_ops *self)
+{
+  self = self->beneath;
+  return self->to_has_memory (self);
+}
+
+static int
+tdefault_has_memory (struct target_ops *self)
+{
+  return 0;
+}
+
+static int
+debug_has_memory (struct target_ops *self)
+{
+  int result;
+  fprintf_unfiltered (gdb_stdlog, "-> %s->to_has_memory (...)\n", debug_target.to_shortname);
+  result = debug_target.to_has_memory (&debug_target);
+  fprintf_unfiltered (gdb_stdlog, "<- %s->to_has_memory (", debug_target.to_shortname);
+  target_debug_print_struct_target_ops_p (&debug_target);
+  fputs_unfiltered (") = ", gdb_stdlog);
+  target_debug_print_int (result);
+  fputs_unfiltered ("\n", gdb_stdlog);
+  return result;
+}
+
+static int
+delegate_has_stack (struct target_ops *self)
+{
+  self = self->beneath;
+  return self->to_has_stack (self);
+}
+
+static int
+tdefault_has_stack (struct target_ops *self)
+{
+  return 0;
+}
+
+static int
+debug_has_stack (struct target_ops *self)
+{
+  int result;
+  fprintf_unfiltered (gdb_stdlog, "-> %s->to_has_stack (...)\n", debug_target.to_shortname);
+  result = debug_target.to_has_stack (&debug_target);
+  fprintf_unfiltered (gdb_stdlog, "<- %s->to_has_stack (", debug_target.to_shortname);
+  target_debug_print_struct_target_ops_p (&debug_target);
+  fputs_unfiltered (") = ", gdb_stdlog);
+  target_debug_print_int (result);
+  fputs_unfiltered ("\n", gdb_stdlog);
+  return result;
+}
+
+static int
+delegate_has_registers (struct target_ops *self)
+{
+  self = self->beneath;
+  return self->to_has_registers (self);
+}
+
+static int
+tdefault_has_registers (struct target_ops *self)
+{
+  return 0;
+}
+
+static int
+debug_has_registers (struct target_ops *self)
+{
+  int result;
+  fprintf_unfiltered (gdb_stdlog, "-> %s->to_has_registers (...)\n", debug_target.to_shortname);
+  result = debug_target.to_has_registers (&debug_target);
+  fprintf_unfiltered (gdb_stdlog, "<- %s->to_has_registers (", debug_target.to_shortname);
+  target_debug_print_struct_target_ops_p (&debug_target);
+  fputs_unfiltered (") = ", gdb_stdlog);
+  target_debug_print_int (result);
+  fputs_unfiltered ("\n", gdb_stdlog);
+  return result;
+}
+
+static int
+delegate_has_execution (struct target_ops *self, ptid_t arg1)
+{
+  self = self->beneath;
+  return self->to_has_execution (self, arg1);
+}
+
+static int
+tdefault_has_execution (struct target_ops *self, ptid_t arg1)
+{
+  return 0;
+}
+
+static int
+debug_has_execution (struct target_ops *self, ptid_t arg1)
+{
+  int result;
+  fprintf_unfiltered (gdb_stdlog, "-> %s->to_has_execution (...)\n", debug_target.to_shortname);
+  result = debug_target.to_has_execution (&debug_target, arg1);
+  fprintf_unfiltered (gdb_stdlog, "<- %s->to_has_execution (", debug_target.to_shortname);
+  target_debug_print_struct_target_ops_p (&debug_target);
+  fputs_unfiltered (", ", gdb_stdlog);
+  target_debug_print_ptid_t (arg1);
+  fputs_unfiltered (") = ", gdb_stdlog);
+  target_debug_print_int (result);
+  fputs_unfiltered ("\n", gdb_stdlog);
+  return result;
+}
+
+static int
 delegate_can_async_p (struct target_ops *self)
 {
   self = self->beneath;
@@ -4226,6 +4363,16 @@ install_delegators (struct target_ops *ops)
     ops->to_log_command = delegate_log_command;
   if (ops->to_get_section_table == NULL)
     ops->to_get_section_table = delegate_get_section_table;
+  if (ops->to_has_all_memory == NULL)
+    ops->to_has_all_memory = delegate_has_all_memory;
+  if (ops->to_has_memory == NULL)
+    ops->to_has_memory = delegate_has_memory;
+  if (ops->to_has_stack == NULL)
+    ops->to_has_stack = delegate_has_stack;
+  if (ops->to_has_registers == NULL)
+    ops->to_has_registers = delegate_has_registers;
+  if (ops->to_has_execution == NULL)
+    ops->to_has_execution = delegate_has_execution;
   if (ops->to_can_async_p == NULL)
     ops->to_can_async_p = delegate_can_async_p;
   if (ops->to_is_async_p == NULL)
@@ -4471,6 +4618,11 @@ install_dummy_methods (struct target_ops *ops)
   ops->to_pid_to_exec_file = tdefault_pid_to_exec_file;
   ops->to_log_command = tdefault_log_command;
   ops->to_get_section_table = tdefault_get_section_table;
+  ops->to_has_all_memory = tdefault_has_all_memory;
+  ops->to_has_memory = tdefault_has_memory;
+  ops->to_has_stack = tdefault_has_stack;
+  ops->to_has_registers = tdefault_has_registers;
+  ops->to_has_execution = tdefault_has_execution;
   ops->to_can_async_p = tdefault_can_async_p;
   ops->to_is_async_p = tdefault_is_async_p;
   ops->to_async = tdefault_async;
@@ -4628,6 +4780,11 @@ init_debug_target (struct target_ops *ops)
   ops->to_pid_to_exec_file = debug_pid_to_exec_file;
   ops->to_log_command = debug_log_command;
   ops->to_get_section_table = debug_get_section_table;
+  ops->to_has_all_memory = debug_has_all_memory;
+  ops->to_has_memory = debug_has_memory;
+  ops->to_has_stack = debug_has_stack;
+  ops->to_has_registers = debug_has_registers;
+  ops->to_has_execution = debug_has_execution;
   ops->to_can_async_p = debug_can_async_p;
   ops->to_is_async_p = debug_is_async_p;
   ops->to_async = debug_async;
